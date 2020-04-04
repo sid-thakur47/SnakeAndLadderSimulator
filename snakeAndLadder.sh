@@ -1,6 +1,7 @@
 #!/bin/bash
 
 playerOnePosition=0
+diceCount=0
 
 NO_PLAY	=1
 LADDER=2
@@ -11,10 +12,12 @@ WIN_POSITION=100
 function continueTillPlayerWins() {
 	for (( ;; ))
 	do
-		echo Current position of player $playerOnePosition
+		diceCount=$(($diceCount+1))
+		echo "Current position of player $playerOnePosition"
 		checkOption
 		if [ $playerOnePosition -eq $WIN_POSITION ]
 		then
+			echo "Dice was rolled for: $diceCount times"
 			break
 		fi
 	done
@@ -61,7 +64,6 @@ function checkOption() {
 
 			$SNAKE)
 				playerOnePosition=$(($playerOnePosition-$roll))
-				echo "test" $playerOnePosition
 				restartGame
 				echo "You Rolled dice of $roll position"
 				echo -e "you are unlucky eaten by snake\nPlayer moved down up to position $playerOnePosition\n "
