@@ -2,7 +2,7 @@
 
 playerOnePosition=0
 
-NO_PLAY=1
+NO_PLAY	=1
 LADDER=2
 SNAKE=3
 START_POSITION=0
@@ -11,12 +11,11 @@ WIN_POSITION=100
 function continueTillPlayerWins() {
 	for (( ;; ))
 	do
-		echo "Current position of player: $playerOnePosition"
-		if [ $playerOnePosition -gt $WIN_POSITION ]
+		echo Current position of player $playerOnePosition
+		checkOption
+		if [ $playerOnePosition -eq $WIN_POSITION ]
 		then
 			break
-		else
-			checkOption
 		fi
 	done
 }
@@ -38,27 +37,35 @@ function restartGame() {
 		playerOnePosition=$START_POSITION
 	fi
 }
+function stayInPreviousPosition() {
+	if [[ $playerOnePosition -ge $WIN_POSITION+1 ]]
+	then
+		playerOnePosition=$(($playerOnePosition-$roll))
+	fi
+}
 
 function checkOption() {
 	selectOption="$(getOption)"
 	roll="$(dieRoll)"
-	case $selectOption in
-		$NO_PLAY)
-			echo -e "player doesnt play\n"
-			;;
+		case $selectOption in
+			$NO_PLAY)
+				echo -e "player doesnt play\n"
+				;;
 
-		$LADDER)
-			playerOnePosition=$(($playerOnePosition+$roll))
-			echo "You Rolled dice of $roll position"
-			echo -e "You are lucky got a ladder\nPlayer moved up to position: $playerOnePosition\n"
-			;;
+			$LADDER)
+				playerOnePosition=$(($playerOnePosition+$roll))
+				stayInPreviousPosition
+				echo "You Rolled dice of $roll position"
+				echo -e "You are lucky got a ladder\nPlayer moved up to position $playerOnePosition\n"
+				;;
 
-		$SNAKE)
-			playerOnePosition=$(($playerOnePosition-$roll))
-			echo "You Rolled dice of $roll position"
-			restartGame
-			echo -e "you are unlucky eaten by snake\nPlayer moved down up to position: $playerOnePosition\n"
-			;;
-	esac
+			$SNAKE)
+				playerOnePosition=$(($playerOnePosition-$roll))
+				echo "test" $playerOnePosition
+				restartGame
+				echo "You Rolled dice of $roll position"
+				echo -e "you are unlucky eaten by snake\nPlayer moved down up to position $playerOnePosition\n "
+				;;
+		esac
 }
 continueTillPlayerWins
