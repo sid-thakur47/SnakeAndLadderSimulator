@@ -1,24 +1,39 @@
 #!/bin/bash
+declare -A dict
 
-playerOnePosition=0
 diceCount=0
+dictMultiPlayer[player1]=0
+dictMultiPlayer[player2]=0
 
-NO_PLAY	=1
+NO_PLAY=1
 LADDER=2
 SNAKE=3
 START_POSITION=0
 WIN_POSITION=100
 
+function getPlayerTurn() {
+	if [ $(($diceCount%2)) -eq 0 ]
+	then
+		echo "Player1 Turn"
+		player=player1
+	else
+		echo "Player2 Turn"
+		player=player2
+	fi
+	diceCount=$(($diceCount+1))
+	echo "Current position of $player is ${dictMultiPlayer[$player]}"
+}
+
 function continueTillPlayerWins() {
 	for (( ;; ))
 	do
-		diceCount=$(($diceCount+1))
-		echo "Current position of player $playerOnePosition"
+		getPlayerTurn
 		checkOption
-		if [ $playerOnePosition -eq $WIN_POSITION ]
+		if [ ${dictMultiPlayer[$player]} -eq $WIN_POSITION ]
 		then
+			echo "$player wins the game"
 			echo "Dice was rolled for: $diceCount times"
-			break
+	break
 		fi
 	done
 }
@@ -34,16 +49,16 @@ function getOption() {
 }
 
 function restartGame() {
-	if [ $playerOnePosition -lt $START_POSITION ]
+	if [ ${dictMultiPlayer[$player]} -lt $START_POSITION ]
 	then
-		echo "You moved to position 0 player restarts from 0"
-		playerOnePosition=$START_POSITION
+		echo "You moved to position 0 $player restarts from 0"
+		dictMultiPlayer[$player]=$START_POSITION
 	fi
 }
 function stayInPreviousPosition() {
-	if [[ $playerOnePosition -ge $WIN_POSITION+1 ]]
+	if [[ ${dictMultiPlayer[$player]} -ge $WIN_POSITION+1 ]]
 	then
-		playerOnePosition=$(($playerOnePosition-$roll))
+		dictMultiPlayer[$player]=$((${dictMultiPlayer[$player]}-$roll))
 	fi
 }
 
@@ -56,17 +71,17 @@ function checkOption() {
 				;;
 
 			$LADDER)
-				playerOnePosition=$(($playerOnePosition+$roll))
+				dictMultiPlayer[$player]=$((${dictMultiPlayer[$player]}+$roll))
 				stayInPreviousPosition
 				echo "You Rolled dice of $roll position"
-				echo -e "You are lucky got a ladder\nPlayer moved up to position $playerOnePosition\n"
+				echo -e "You are lucky got a ladder\nPlayer moved up to position ${dict[$player]}\n"
 				;;
 
 			$SNAKE)
-				playerOnePosition=$(($playerOnePosition-$roll))
+				dictMultiPlayer[$player]=$((${dictMultiPlayer[$player]}-$roll))
 				restartGame
 				echo "You Rolled dice of $roll position"
-				echo -e "you are unlucky eaten by snake\nPlayer moved down up to position $playerOnePosition\n "
+				echo -e "you are unlucky eaten by snake\nPlayer moved down up to position ${dict[$player]}\n "
 				;;
 		esac
 }
