@@ -33,7 +33,7 @@ function continueTillPlayerWins() {
 		then
 			echo "$player wins the game"
 			echo "Dice was rolled for: $diceCount times"
-	break
+			break
 		fi
 	done
 }
